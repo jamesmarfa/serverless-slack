@@ -94,7 +94,7 @@ class Slack extends EventEmitter {
     // Ignore Bot Messages
     if (!this.ignoreBots || !(payload.event || payload).bot_id) {
       // Load Auth And Trigger Events
-      this.store.get(id).then(this.notify.bind(this, payload));
+      this.store.get(id).then(this.notify.bind(this, payload, callback));
     }
   }
 
@@ -104,7 +104,7 @@ class Slack extends EventEmitter {
    * @param {Object} payload - The Lambda event
    * @param {Object} auth - The Slack authentication
    */
-  notify(payload, auth) {
+  notify(payload, auth, callback) {
     let events = ['*'];
     let bot = new Client(auth, payload);
 
@@ -124,7 +124,7 @@ class Slack extends EventEmitter {
     if (payload.callback_id) events.push('interactive_message', payload.callback_id);
 
     // trigger all events
-    events.forEach(name => this.emit(name, payload, bot, this.store));
+    events.forEach(name => this.emit(name, payload, bot, this.store, callback));
   }
 
 }
